@@ -39,8 +39,11 @@ class Issue:
     created_at: str
     url: str
     media: Media
+    rating: Optional[int] = None # Issue endpoint
     acknowledged_at: Optional[str] = None
     closed_at: Optional[str] = None
+    reopened_at: Optional[str] = None # Issue endpoint
+    shortened_url: Optional[str] = None # Issue endpoint
 
 
 @dataclass_json
