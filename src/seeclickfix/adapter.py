@@ -81,6 +81,8 @@ class RestAdapter:
             self._logger.error(msg=(str(e)))
             raise RestAdapterException("Request failed") from e
 
+        #print(response.url)
+
         # deserialize
         try:
             data_out = await response.json()
