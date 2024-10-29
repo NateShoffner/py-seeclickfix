@@ -4,7 +4,6 @@ version = "0.1.1"
 description = ""
 authors = ["Nate Shoffner <nate.shoffner@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -14,6 +13,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.9.1"
+dataclasses-json = "^0.6.7"
 
 [tool.setuptools.packages.find]
 where = ["src"]
