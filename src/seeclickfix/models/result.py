@@ -1,12 +1,11 @@
 from typing import List, Dict
-from requests.structures import CaseInsensitiveDict
 
 
 class Result:
     def __init__(
         self,
         status_code: int,
-        headers: CaseInsensitiveDict,
+        headers: dict,
         message: str = "",
         data: List[Dict] = None,
     ):

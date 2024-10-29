@@ -13,7 +13,6 @@ class RestAdapterException(Exception):
 class RestAdapter:
     def __init__(
         self,
-        session: aiohttp.ClientSession,
         hostname: str = "",
         base: str = "",
         user_agent: str = "",
@@ -22,14 +21,12 @@ class RestAdapter:
     ):
         """
         Constructor for RestAdapter
-        :param session: Client session to use for requests
         :param hostname: Hostname of the API server
         :param base (optional): Base URL of the API server
         :param user_agent (optional):  User-Agent string to use when making HTTP requests
         :param ssl_verify: (optional) Verify SSL certificates. Defaults to True.
         :param logger: (optional) If your app has a logger, pass it in here.
         """
-        self.session = session
         self._logger = logger or logging.getLogger(__name__)
         self.url = f"https://{hostname}/"
 
@@ -37,12 +34,11 @@ class RestAdapter:
             self.url = f"{self.url}{base}/"
 
         self.user_agent = user_agent
-        self._ssl_verify = ssl_verify
-        if not ssl_verify:
-            self.session.verify_ssl = False
+        self.ssl_verify = ssl_verify
 
     async def _do(
         self,
+        session: aiohttp.ClientSession,
         http_method: str,
         endpoint: str,
         ep_params: Dict = None,
@@ -67,12 +63,14 @@ class RestAdapter:
             (log_line_pre, "success={}, status_code={}, message={}")
         )
 
+        session.ssl_verify = self.ssl_verify
+
         try:
             self._logger.debug(msg=log_line_pre)
-            response = await self.session.request(
+            response = await session.request(
                 method=http_method,
                 url=full_url,
-                verify_ssl=self._ssl_verify,
+                verify_ssl=self.ssl_verify,
                 headers=headers,
                 params=ep_params,
                 json=data,
@@ -81,7 +79,7 @@ class RestAdapter:
             self._logger.error(msg=(str(e)))
             raise RestAdapterException("Request failed") from e
 
-        #print(response.url)
+        self._logger.debug(response.url)
 
         # deserialize
         try:
@@ -107,20 +105,22 @@ class RestAdapter:
         raise RestAdapterException(f"{status_code}: {response.reason}")
 
     async def get(
-        self, endpoint: str, ep_params: Dict = None, headers: Dict = {}
+        self, session: aiohttp.ClientSession, endpoint: str, ep_params: Dict = None, headers: Dict = {}
     ) -> Result:
         return await self._do(
-            http_method="GET", endpoint=endpoint, ep_params=ep_params, headers=headers
+            session, http_method="GET", endpoint=endpoint, ep_params=ep_params, headers=headers
         )
 
     async def post(
         self,
+        session: aiohttp.ClientSession,
         endpoint: str,
         ep_params: Dict = None,
         headers: Dict = {},
         data: Dict = None,
     ) -> Result:
         return await self._do(
+            session,
             http_method="POST",
             endpoint=endpoint,
             ep_params=ep_params,
@@ -130,12 +130,14 @@ class RestAdapter:
 
     async def delete(
         self,
+        session: aiohttp.ClientSession,
         endpoint: str,
         ep_params: Dict = None,
         headers: Dict = {},
         data: Dict = None,
     ) -> Result:
         return await self._do(
+            session,
             http_method="DELETE",
             endpoint=endpoint,
             ep_params=ep_params,

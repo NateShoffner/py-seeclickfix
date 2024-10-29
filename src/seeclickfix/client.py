@@ -8,13 +8,29 @@ class SeeClickFixClient:
     """Client for interacting with the SeeClickFix API"""
 
     def __init__(
-        self, session: aiohttp.ClientSession, logger: logging.Logger = None
+        self, logger: logging.Logger = None
     ) -> None:
         self._logger = logger or logging.getLogger(__name__)
-        self.session = session
-        self.adapter = RestAdapter(
-            self.session, hostname="seeclickfix.com", base="api/v2"
-        )
+        self._session = None
+        self.adapter = RestAdapter(hostname="seeclickfix.com", base="api/v2")
+
+    @property
+    def session(self):
+        if not self._session:
+            self._session = aiohttp.ClientSession()
+        return self._session
+
+    async def __aenter__(self):
+        self.session = aiohttp.ClientSession()
+        self.adapter.session = self.session
+        return self
+    
+    async def __aexit__(self, exc_type, exc, tb):
+        if not self.session:
+            return
+
+        await self.session.close()
+        self.session = None
 
     async def get_issues(
         self,
@@ -36,5 +52,6 @@ class SeeClickFixClient:
             "fields[issue]": fields,
             "page": page,
         }
-        result = await self.adapter.get("issues", ep_params=params)
+
+        result = await self.adapter.get(self.session, "issues", ep_params=params)
         return RootObject.from_dict(result.data)
