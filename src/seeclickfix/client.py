@@ -39,8 +39,7 @@ class SeeClickFixClient:
         max_lat: float,
         max_lng: float,
         status: list[Status],
-        fields: str,
-        page: int,
+        page: int = 1,
     ) -> RootObject:
         """Get a list of issues"""
         params = {
@@ -49,7 +48,7 @@ class SeeClickFixClient:
             "max_lat": max_lat,
             "max_lng": max_lng,
             "status": ",".join([s.value.lower() for s in status]),
-            "fields[issue]": fields,
+            "fields[issue]": "id,status,summary,description,lat,lng,address,created_at,url,media",
             "page": page,
         }
 
