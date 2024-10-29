@@ -8,9 +8,9 @@ class SeeClickFixClient:
     """Client for interacting with the SeeClickFix API"""
 
     def __init__(
-        self, logger: logging.Logger = None
+        self
     ) -> None:
-        self._logger = logger or logging.getLogger(__name__)
+        self._logger = logging.getLogger(__name__)
         self._session = None
         self.adapter = RestAdapter(hostname="seeclickfix.com", base="api/v2")
 
