@@ -1,7 +1,7 @@
 import logging
 import aiohttp
 from .adapter import RestAdapter
-from .models.issue import RootObject
+from .models.issue import RootObject, Status
 
 
 class SeeClickFixClient:
@@ -38,7 +38,7 @@ class SeeClickFixClient:
         min_lng: float,
         max_lat: float,
         max_lng: float,
-        status: str,
+        status: list[Status],
         fields: str,
         page: int,
     ) -> RootObject:
@@ -48,7 +48,7 @@ class SeeClickFixClient:
             "min_lng": min_lng,
             "max_lat": max_lat,
             "max_lng": max_lng,
-            "status": status,
+            "status": ",".join([s.value.lower() for s in status]),
             "fields[issue]": fields,
             "page": page,
         }
