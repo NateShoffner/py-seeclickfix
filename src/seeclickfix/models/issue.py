@@ -1,34 +1,28 @@
-from dataclasses import dataclass
-from typing import Optional
-from enum import Enum
 from datetime import datetime
-from dataclasses_json import dataclass_json
+from enum import Enum
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 
-@dataclass_json
-@dataclass
-class Errors:
+class Errors(BaseModel):
     pass
 
 
-@dataclass_json
-@dataclass
-class Media:
-    video_url: None
+class Media(BaseModel):
+    video_url: Optional[None]
     representative_image_url: str
     image_full: Optional[str] = None
     image_square_100_x100: Optional[str] = None
 
 
-class Status(Enum):
+class Status(str, Enum):
     ACKNOWLEDGED = "Acknowledged"
     CLOSED = "Closed"
     OPEN = "Open"
 
 
-@dataclass_json
-@dataclass
-class Issue:
+class Issue(BaseModel):
     id: int
     status: str
     summary: str
@@ -39,16 +33,14 @@ class Issue:
     created_at: str
     url: str
     media: Media
-    rating: Optional[int] = None # Issue endpoint
+    rating: Optional[int] = None
     acknowledged_at: Optional[str] = None
     closed_at: Optional[str] = None
-    reopened_at: Optional[str] = None # Issue endpoint
-    shortened_url: Optional[str] = None # Issue endpoint
+    reopened_at: Optional[str] = None
+    shortened_url: Optional[str] = None
 
 
-@dataclass_json
-@dataclass
-class Pagination:
+class Pagination(BaseModel):
     entries: int
     page: int
     per_page: int
@@ -59,15 +51,11 @@ class Pagination:
     previous_page_url: Optional[str] = None
 
 
-@dataclass_json
-@dataclass
-class Metadata:
+class Metadata(BaseModel):
     pagination: Pagination
 
 
-@dataclass_json
-@dataclass
-class RootObject:
-    issues: list[Issue]
+class RootObject(BaseModel):
+    issues: List[Issue]
     metadata: Metadata
     errors: Errors

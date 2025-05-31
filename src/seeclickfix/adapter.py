@@ -1,8 +1,10 @@
 import json
-import aiohttp
 import logging
-from typing import Dict
 from json import JSONDecodeError
+from typing import Dict
+
+import aiohttp
+
 from .models.result import Result
 
 
@@ -105,10 +107,18 @@ class RestAdapter:
         raise RestAdapterException(f"{status_code}: {response.reason}")
 
     async def get(
-        self, session: aiohttp.ClientSession, endpoint: str, ep_params: Dict = None, headers: Dict = {}
+        self,
+        session: aiohttp.ClientSession,
+        endpoint: str,
+        ep_params: Dict = None,
+        headers: Dict = {},
     ) -> Result:
         return await self._do(
-            session, http_method="GET", endpoint=endpoint, ep_params=ep_params, headers=headers
+            session,
+            http_method="GET",
+            endpoint=endpoint,
+            ep_params=ep_params,
+            headers=headers,
         )
 
     async def post(
